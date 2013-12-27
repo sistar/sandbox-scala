@@ -1,0 +1,7 @@
+.gradle/
+.idea/
+build/
+classes/
+sandbox-scala.iml
+sandbox-scala.ipr
+sandbox-scala.iws
