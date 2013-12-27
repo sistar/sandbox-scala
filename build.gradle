@@ -1,0 +1,48 @@
+apply plugin: 'java'
+apply plugin: 'scala'
+apply plugin: 'idea'
+
+repositories {
+    mavenCentral()
+    flatDir { dirs 'lib' }
+    maven {url 'file://localhost/tmp/myRepo/'}
+}
+configurations {
+    compile {
+        transitive = true
+    }
+    all*.exclude group: 'commons-logging', module: 'commons-logging'
+    deployerJars
+    testArtifacts
+}
+dependencies {
+    compile(group: 'org.apache.zookeeper', name: 'zookeeper', version: '3.3.4') {
+        exclude module: 'log4j'
+        exclude module: 'jline'
+    }
+    compile(group: 'com.101tec', name: 'zkclient', version: '0.3')
+    compile(group: 'org.scala-lang', name: 'scala-reflect', version: '2.10.1')
+    compile(group: 'org.scala-lang', name: 'scala-compiler', version: '2.10.1')
+
+    compile(group: 'net.sf.jopt-simple', name: 'jopt-simple', version: '3.2')
+    compile(group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.5')
+    compile(group: 'org.slf4j', name: 'log4j-over-slf4j', version: '1.7.5')
+    compile(group: 'org.slf4j', name: 'jcl-over-slf4j', version: '1.7.5')
+
+    compile 'com.yammer.metrics:metrics-core:2.2.0'
+    //compile(group: 'org.apache.kafka', name: 'kafka_2.10-0.8.0', version: '0.8.1')
+    compile(group: 'org.scala-lang', name: 'scala-library', version: '2.10.1')
+    //compile files('libs/kafka_2.10-0.8.1.jar')
+    //testCompile files('libs/kafka_2.10-0.8.1-test.jar')
+    compile('com.codahale.metrics:metrics-core:3.0.1')
+    compile('com.codahale.metrics:metrics-graphite:3.0.1')
+    compile('com.google.guava:guava:15.0')
+    compile('org.xerial.snappy:snappy-java:1.0.5')
+    testCompile('org.testng:testng:6.8.7')
+    testCompile('org.scalatest:scalatest_2.10:2.0')
+    compile('org.apache.camel:camel-core:2.12.2')
+    compile('org.apache.camel:camel-testng:2.12.2')
+    compile('org.apache.camel:camel-scala:2.12.2')
+    compile('com.typesafe.akka:akka-actor_2.10:2.2.3')
+    testCompile files('/tmp/myRepo/merge-log/merge-log/1.0/merge-log-1.0.jar')
+}
