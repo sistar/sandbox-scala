@@ -1,24 +1,35 @@
 package de.sistar.experiments
 
 import org.apache.camel._
-import akka.actor.{Props, Actor, ActorLogging, ActorSystem}
+import akka.actor._
 
-case class Greeting(message: Message)
+case class RequestMessage(message: Message, recvMsgCount: Long)
 
-class GreetingActor extends Actor with ActorLogging {
-  def receive = {
-    case Greeting(msg) ⇒ log.info("Hello " + msg)
+
+object DeltaAggregator {
+
+  def apply(context: CamelContext): DeltaAggregator = {
+    val pt = context.createProducerTemplate()
+    new DeltaAggregator(system.actorOf(Props(classOf[DeltaAggregatorActor], pt.sendBody("direct:aggregated", _: Any))))
   }
-}
-
-class DeltaAggregator extends Processor {
-
 
   val system = ActorSystem("MySystem")
-  val greeter = system.actorOf(Props[GreetingActor], name = "greeter")
+  val greeter = system.actorOf(Props[RequestMessageRetriever], name = "delta-aggregator")
 
-  def process(exchange: Exchange): Unit = {
-    greeter ! Greeting(exchange.getIn)
+}
 
+class DeltaAggregatorActor(ptAgg: (Any) => Unit) extends Actor {
+  def receive: Actor.Receive = {
+    case l: List[RequestMessage] =>
+      ptAgg(l)
+    case msg: Message =>
+      DeltaAggregator.greeter ! msg
   }
 }
+
+class DeltaAggregator(actor: ActorRef) extends Processor {
+  def process(exchange: Exchange): Unit = {
+    actor ! exchange.getIn
+  }
+}
+

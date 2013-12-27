@@ -66,5 +66,12 @@ class AggregatorRoute extends RouteBuilder {
       to("mock:a")
     }
   }
-  "direct:b" process (new DeltaAggregator) to("mock:b")
+
+
+
+
+
+  "direct:aggregated" to ("mock:b")
+  private val deltaAggregator = DeltaAggregator(getContext)
+  "direct:b" process deltaAggregator
 }
