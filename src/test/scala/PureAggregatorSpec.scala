@@ -1,25 +1,14 @@
 import de.sistar.experiments.{JAggregatorRoute, AggregatorRoute}
 import org.apache.camel.scala.dsl.builder.RouteBuilderSupport
-import org.apache.camel.testng.{CamelSpringTestSupport, CamelTestSupport}
+import org.apache.camel.testng.{CamelTestSupport, CamelSpringTestSupport}
 import org.springframework.context.support.ClassPathXmlApplicationContext
 import org.testng.annotations.Test
 
-class AggregatorSpec extends CamelSpringTestSupport with RouteBuilderSupport {
+class PureAggregatorSpec extends CamelTestSupport with RouteBuilderSupport {
 
   override def createRouteBuilders() = {
     val xs: AggregatorRoute = new AggregatorRoute(context)
-    val xs1: JAggregatorRoute = new JAggregatorRoute
-    xs1.setContext(context)
-    Array(xs,xs1)
-  }
-  override def createApplicationContext() = {new ClassPathXmlApplicationContext("test-context.xml")}
-
-  @Test
-  def shouldAggregateByTimeout() {
-
-    getMockEndpoint("mock:a").expectedMessageCount(1)
-    template.sendBodyAndHeader("direct:a", "Hello World", "corid", 1)
-    assertMockEndpointsSatisfied()
+    Array(xs)
   }
 
   @Test

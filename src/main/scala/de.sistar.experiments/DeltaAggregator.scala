@@ -9,8 +9,8 @@ case class RequestMessage(message: Message, recvMsgCount: Long)
 object DeltaAggregator {
 
   def apply(context: CamelContext): DeltaAggregator = {
-    val pt = context.createProducerTemplate()
-    new DeltaAggregator(system.actorOf(Props(classOf[DeltaAggregatorActor], pt.sendBody("direct:aggregated", _: Any))))
+
+    new DeltaAggregator(system.actorOf(Props(classOf[DeltaAggregatorActor], context)))
   }
 
   val system = ActorSystem("MySystem")
@@ -18,10 +18,11 @@ object DeltaAggregator {
 
 }
 
-class DeltaAggregatorActor(ptAgg: (Any) => Unit) extends Actor {
+class DeltaAggregatorActor(camelContext: CamelContext) extends Actor {
+  val pt = camelContext.createProducerTemplate()
   def receive: Actor.Receive = {
     case l: List[RequestMessage] =>
-      ptAgg(l)
+      pt.sendBody("direct:aggregated",l)
     case msg: Message =>
       DeltaAggregator.greeter ! msg
   }
