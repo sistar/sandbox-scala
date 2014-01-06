@@ -6,10 +6,7 @@ import org.testng.annotations.Test
 
 class PureAggregatorSpec extends CamelTestSupport with RouteBuilderSupport {
 
-  override def createRouteBuilders() = {
-    val xs: AggregatorRoute = new AggregatorRoute(context)
-    Array(xs)
-  }
+  override def createRouteBuilder() =  new AggregatorRoute().createMyFilterRoute
 
   @Test
   def shouldAggregateByActor() {

@@ -7,7 +7,7 @@ import org.testng.annotations.Test
 class AggregatorSpec extends CamelSpringTestSupport with RouteBuilderSupport {
 
   override def createRouteBuilders() = {
-    val xs: AggregatorRoute = new AggregatorRoute(context)
+    val xs = new AggregatorRoute().createMyFilterRoute
     val xs1: JAggregatorRoute = new JAggregatorRoute
     xs1.setContext(context)
     Array(xs,xs1)
