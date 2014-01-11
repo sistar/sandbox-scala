@@ -4,10 +4,10 @@ import akka.camel._
 import akka.actor.{Props, ActorSystem}
 import scala.concurrent.duration._
 
-object MyEndpoint {
+object ActorFilterEndpoint {
   val system = ActorSystem("some-system")
   val camel = CamelExtension(system)
-  val actorRef = system.actorOf(Props[MyEndpoint])
+  val actorRef = system.actorOf(Props[ActorFilterEndpoint])
 
 
   // get a future reference to the activation of the endpoint of the Consumer Actor
@@ -15,22 +15,24 @@ object MyEndpoint {
     executor = system.dispatcher)
 }
 
-class MyEndpoint extends Consumer {
+class ActorFilterEndpoint extends Consumer {
   def endpointUri = "vm:x"
-  val ordersRef = context.actorOf(Props[Orders])
+
+  val senderRef = context.actorOf(Props[SendToExternalCamelActor])
+
   def receive = {
-    case CamelMessage(body, headers) => {
-      println("message = %s" format body)
-      ordersRef ! "x"
-    }
-    case _ => {}
+    case CamelMessage(body, headers) =>
+      println("message = %s with headers = %s" format( body, headers))
+      if (headers.get("gold").getOrElse("false").asInstanceOf[String].toBoolean)
+        senderRef ! "x"
+    case _ =>
   }
 }
 
 import akka.actor.Actor
 import akka.camel.{Producer, Oneway}
 
-class Orders extends Actor with Producer with Oneway {
+class SendToExternalCamelActor extends Actor with Producer with Oneway {
   def endpointUri = "vm:y"
 }
 
