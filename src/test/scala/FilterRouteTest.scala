@@ -1,16 +1,23 @@
 
-import de.sistar.experiments.FilterRoute
-import org.apache.camel.test.junit4.CamelTestSupport
-import org.junit.Test
+import akka.actor.ActorRef
+import de.sistar.experiments.filter.MyEndpoint
+import org.apache.camel.testng.CamelSpringTestSupport
 import org.apache.camel.scala.dsl.builder.RouteBuilderSupport
+import org.springframework.context.support.{ClassPathXmlApplicationContext, AbstractApplicationContext}
+import org.testng.annotations.Test
+import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
 
 
-class FilterRouteTest extends CamelTestSupport with RouteBuilderSupport {
+class FilterRouteTest extends CamelSpringTestSupport with RouteBuilderSupport {
 
-  // then override the createRouteBuilder method to provide the route we want to test
-  override def createRouteBuilder() = new FilterRoute().createMyFilterRoute
+  private val activationFuture: Future[ActorRef] = MyEndpoint.activationFuture
 
-  // and here we just have regular JUnit test method which uses the API from camel-test
+  def createApplicationContext(): AbstractApplicationContext = {
+    Await.ready(activationFuture, 10 seconds)
+    new ClassPathXmlApplicationContext("test-context.xml")
+
+  }
 
   @Test
   def testFilterRouteGold() {
