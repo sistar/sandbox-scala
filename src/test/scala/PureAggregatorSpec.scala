@@ -1,12 +1,11 @@
-import de.sistar.experiments.{JAggregatorRoute, AggregatorRoute}
+import de.sistar.experiments.aggregate.AggregatorRoute
 import org.apache.camel.scala.dsl.builder.RouteBuilderSupport
-import org.apache.camel.testng.{CamelTestSupport, CamelSpringTestSupport}
-import org.springframework.context.support.ClassPathXmlApplicationContext
+import org.apache.camel.testng.CamelTestSupport
 import org.testng.annotations.Test
 
 class PureAggregatorSpec extends CamelTestSupport with RouteBuilderSupport {
 
-  override def createRouteBuilder() =  new AggregatorRoute().createMyFilterRoute
+  override def createRouteBuilder() = new AggregatorRoute().createMyFilterRoute
 
   @Test
   def shouldAggregateByActor() {
