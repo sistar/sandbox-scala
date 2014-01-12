@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory
 import org.apache.camel.processor.aggregate.AbstractListAggregationStrategy
 import org.apache.camel.Exchange
 import org.apache.camel.scala.SimplePeriod
+import akka.actor.ActorSystem
 
 
 object AggregatorRoute {
@@ -15,7 +16,7 @@ object AggregatorRoute {
 
 class AggregatorRoute {
 
-  new DeltaAggregator
+
 
   class MyListAS extends AbstractListAggregationStrategy[Integer] {
     def getValue(exchange: Exchange): Integer = exchange.getIn.getHeader("corid").asInstanceOf[Integer]
@@ -29,7 +30,7 @@ class AggregatorRoute {
         to("mock:a")
       }
     }
-
+    private val actorSystem: ActorSystem = DeltaAggregator.initActors()
     // distance based Akka Actor
     "direct:b" to "vm:aggregatorInput"
     "vm:aggregated" to ("mock:b")

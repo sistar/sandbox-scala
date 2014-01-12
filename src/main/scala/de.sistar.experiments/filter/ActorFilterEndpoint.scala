@@ -3,8 +3,11 @@ package de.sistar.experiments.filter
 import akka.camel._
 import akka.actor.{Props, ActorSystem}
 import scala.concurrent.duration._
+import scala.concurrent.Await
 
 object ActorFilterEndpoint {
+
+  def initActorSystem() = {}
   val system = ActorSystem("some-system")
   val camel = CamelExtension(system)
   val actorRef = system.actorOf(Props[ActorFilterEndpoint])
@@ -13,6 +16,7 @@ object ActorFilterEndpoint {
   // get a future reference to the activation of the endpoint of the Consumer Actor
   def activationFuture = camel.activationFutureFor(actorRef)(timeout = 10 seconds,
     executor = system.dispatcher)
+  Await.result(activationFuture,10 seconds)
 }
 
 class ActorFilterEndpoint extends Consumer {

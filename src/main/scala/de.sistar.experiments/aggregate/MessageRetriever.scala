@@ -35,7 +35,7 @@ class MessageRetriever(allowedDistance: Long) extends Actor with Aggregator {
   var counter: Long = 0
   val coridToByCoridAggregatorMap = scala.collection.mutable.HashMap.empty[Long, ActorRef]
   expect {
-    case message: org.apache.camel.Message =>
+    case message: akka.camel.CamelMessage =>
       counter += 1
       val messageWithCounter = new MessageWithCounter(message, counter)
       getOrCreateActorForCorid(messageWithCounter.corid) ! messageWithCounter
